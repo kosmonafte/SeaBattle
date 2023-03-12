@@ -12,6 +12,7 @@ int checkField(char** field, char* decks);
 int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
 int mainMenu(bool* shipsFullPtr);
 int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
+int automaticFF(char** field, bool* shipsFullPtr, int size);
 
 int main()
 {
@@ -25,28 +26,31 @@ int main()
     bool autoArrangeShips = false; // Окно автоматической расстановки кораблей
     bool battle = false; // Окно сражения
     bool shipsFull = false; bool* shipsFullPtr = &shipsFull; // Расставлены корабли или нет
+    bool enemyShipsFull = false; bool* enemySshipsFullPtr = &shipsFull;
     while (true) {
         if (menu) { //  Окно меню
             int checkMenu = 0;
             checkMenu = mainMenu(shipsFullPtr);
             if (checkMenu == 1) {
-                menu = false;
-                arrangeShips = true;
-                autoArrangeShips = false;
-                battle = false;
-                continue;
+                if (shipsFull) {
+                    menu = false;
+                    arrangeShips = false;
+                    autoArrangeShips = false;
+                    battle = true;
+                    continue;
+                }
+                else {
+                    continue;
+                } 
             }
             else if (checkMenu == 2) {
-                menu = false;
-                arrangeShips = false;
-                autoArrangeShips = false;
-                battle = true;
+                automaticFF(myField, shipsFullPtr, size);
                 continue;
             }
             else if (checkMenu == 3) {
                 menu = false;
-                arrangeShips = false;
-                autoArrangeShips = true;
+                arrangeShips = true;
+                autoArrangeShips = false;
                 battle = false;
                 continue;
             }
@@ -76,32 +80,162 @@ int main()
                 continue;
             }
         }
-        if (autoArrangeShips) { // Окно автоматической расстановки кораблей
-            int check = automaticFillField(enemyField, myField, size, shipsFullPtr);
-            if (check == 1) {
-                autoArrangeShips = false;
-                battle = true;
-            }
-            else if (check == 2) {
-                delete[]myField;
-                myField = createField(size);
-                shipsFull = false;
-                continue;
-            }
-            else if (check == 3) {
-                if (!shipsFull) {
-                    delete[]myField;
-                    myField = createField(size);
+        //if (autoArrangeShips) { // Окно автоматической расстановки кораблей
+        //    int check = automaticFillField(enemyField, myField, size, shipsFullPtr);
+        //    if (check == 1) {
+        //        autoArrangeShips = false;
+        //        battle = true;
+        //    }
+        //    else if (check == 2) {
+        //        delete[]myField;
+        //        myField = createField(size);
+        //        shipsFull = false;
+        //        continue;
+        //    }
+        //    else if (check == 3) {
+        //        if (!shipsFull) {
+        //            delete[]myField;
+        //            myField = createField(size);
+        //        }
+        //        menu = true;
+        //        arrangeShips = false;
+        //        continue;
+        //    }
+        //}
+        if (battle) { // Окно сражения  
+            automaticFF(enemyField, enemySshipsFullPtr, size);
+            char* str = new char[3];
+            char** tempField = createField(size);
+            while (true) {
+                system("cls");
+                printBattleField(tempField, myField, size);
+                cout << "Выстрел: ";
+                cin >> str;
+                if (enemyField[str[1] - 47][str[0] - 64] == '#') {
+                    tempField[str[1] - 47][str[0] - 64] = 'X';
                 }
-                menu = true;
-                arrangeShips = false;
-                continue;
+                else {
+                    tempField[str[1] - 47][str[0] - 64] = ' ';
+                }
             }
-        }
-        if (battle) { // Окно сражения
-            cout << "Start Battle!" << endl;
         }
     }
+}
+
+int automaticFF(char** field, bool* shipsFullPtr, int size) {
+    for (int i = 1; i < size; i++) {
+        for (int j = 1; j < size; j++) {
+            field[i][j] = '.';
+        }
+    }
+    int i = 0; int timer = 25;
+    char* decks = new char[6];
+    bool fullShips = false;
+    while (!fullShips) {
+        if (i == 0) {
+            for (int j = 0; j < 6; j++) {
+                if (j == 0 || j == 3) {
+                    decks[j] = rand() % 10 + 65;
+                }
+                else if (j == 2) {
+                    decks[j] = '-';
+                }
+                else if (j == 1 || j == 4) {
+                    decks[j] = rand() % 10 + 48;
+                }
+                else if (j == 5) {
+                    decks[j] = '\0';
+                }
+            }
+            if (!checkShip(decks, 4) && !checkField(field, decks)) {
+                createShip(field, decks);
+                i++;
+                continue;
+            }
+            else {
+                continue;
+            }
+        }
+        else if (i == 1 || i == 2) {
+            for (int j = 0; j < 6; j++) {
+                if (j == 0 || j == 3) {
+                    decks[j] = rand() % 10 + 65;
+                }
+                else if (j == 2) {
+                    decks[j] = '-';
+                }
+                else if (j == 1 || j == 4) {
+                    decks[j] = rand() % 10 + 48;
+                }
+                else if (j == 5) {
+                    decks[j] = '\0';
+                }
+            }
+            if (!checkShip(decks, 3) && !checkField(field, decks)) {
+                createShip(field, decks);
+                i++;
+                continue;
+            }
+            else {
+                continue;
+            }
+        }
+        else if (i > 2 && i < 6) {
+            for (int j = 0; j < 6; j++) {
+                if (j == 0 || j == 3) {
+                    decks[j] = rand() % 10 + 65;
+                }
+                else if (j == 2) {
+                    decks[j] = '-';
+                }
+                else if (j == 1 || j == 4) {
+                    decks[j] = rand() % 10 + 48;
+                }
+                else if (j == 5) {
+                    decks[j] = '\0';
+                }
+            }
+            if (!checkShip(decks, 2) && !checkField(field, decks)) {
+                createShip(field, decks);
+                i++;
+                continue;
+            }
+            else {
+                continue;
+            }
+        }
+        else if (i > 5 && i < 10) {
+            for (int j = 0; j < 6; j++) {
+                if (j == 0) {
+                    decks[j] = rand() % 10 + 65;
+                    decks[3] = decks[j];
+                }
+                else if (j == 2) {
+                    decks[j] = '-';
+                }
+                else if (j == 1) {
+                    decks[j] = rand() % 10 + 48;
+                    decks[4] = decks[j];
+                }
+                else if (j == 5) {
+                    decks[j] = '\0';
+                }
+            }
+            if (!checkShip(decks, 1) && !checkField(field, decks)) {
+                createShip(field, decks);
+                i++;
+                continue;
+            }
+            else {
+                continue;
+            }
+        }
+        if (i == 10) {
+            fullShips = true;
+        }
+    }
+    *shipsFullPtr = true;
+    return 0;
 }
 
 int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {
@@ -324,12 +458,11 @@ int mainMenu(bool* shipsFullPtr) {
     cout << " ####   #####  ##  ##     #####   ##  ##    ##      ##    ######  #####     ###" << endl;
     cout << "===============================================================================" << endl;
     cout << endl;
-    
     cout << endl;
-    cout << "1 - Расставить корабли" << endl;
-    cout << "2 - Начать сражение" << endl;
-    cout << "3 - Автоматическая расстановка кораблей";
-    (*shipsFullPtr) ? cout << " (Корабли расставлены!)" : cout << " (Необходимо расставить корабли!)";
+    cout << "1 - Начать сражение";
+    (*shipsFullPtr) ? cout << " (Корабли расставлены!)" << endl : cout << " (Необходимо расставить корабли!)" << endl;
+    cout << "2 - Автоматическая расстановка кораблей" << endl;
+    cout << "3 - Расставить корабли в ручную" << endl;
     cout << endl;
     cin >> start;
     if (start == 1) {
