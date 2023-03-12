@@ -1,2 +1,3 @@
 ﻿  SeaBattle.cpp
+C:\Users\L1nk\source\repos\SeaBattle\SeaBattle\SeaBattle.cpp(443): warning C4715: checkField: значение возвращается не при всех путях выполнения
   SeaBattle.vcxproj -> C:\Users\L1nk\source\repos\SeaBattle\x64\Debug\SeaBattle.exe

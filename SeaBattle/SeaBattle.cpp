@@ -7,9 +7,10 @@ char** createField(int size);
 void printBattleField(char** enemy, char** my, int size);
 void createShip(char** array, char* str);
 int checkShip(char* decks, int size);
+int checkField(char** field, char* decks);
 int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
 int mainMenu(bool* shipsFullPtr);
-int automaticFillField(char** efield, char** mfiled);
+int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
 
 int main()
 {
@@ -244,7 +245,7 @@ int mainMenu(bool* shipsFullPtr) {
     }
 }
 
-int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {
+int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {  // Функиця расстановки кораблей
     int i = 0;
     char* decks = new char[6];
     bool fullShips = false;
@@ -269,7 +270,7 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {
                 else if (!strcmp(decks, "exit")) {
                     return 3;
                 }
-                if (!checkShip(decks, 4)) {
+                if (!checkShip(decks, 4) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -287,7 +288,7 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {
                 else if (!strcmp(decks, "exit")) {
                     return 3;
                 }
-                if (!checkShip(decks, 3)) {
+                if (!checkShip(decks, 3) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -305,7 +306,7 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {
                 else if (!strcmp(decks, "exit")) {
                     return 3;
                 }
-                if (!checkShip(decks, 2)) {
+                if (!checkShip(decks, 2) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -323,7 +324,7 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {
                 else if (!strcmp(decks, "exit")) {
                     return 3;
                 }
-                if (!checkShip(decks, 1)) {
+                if (!checkShip(decks, 1) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -415,6 +416,29 @@ int checkShip(char* decks, int size) {                      //  Функия п�
     }
     else {
         return 1;
+    }
+}
+
+int checkField(char** field, char* decks) {  // Функция проверки игрового поля на возможность установки корабля
+    if (decks[1] == decks[4]) {
+        for (int j = decks[0] - 64; j <= decks[3] - 64; j++) {
+            if (field[decks[1] - 47][j] == ' ') {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+    }
+    else if (decks[0] == decks[3]) {
+        for (int i = decks[1] - 47; i <= decks[4] - 47; i++) {
+            if (field[i][decks[0] - 64] == ' ') {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
     }
 }
 
