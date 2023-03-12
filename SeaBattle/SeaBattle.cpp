@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <windows.h>
 using namespace std;
 char** createField(int size);
 void printBattleField(char** enemy, char** my, int size);
@@ -15,11 +16,13 @@ int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPt
 int main()
 {
     setlocale(LC_ALL, "RUS");
+    srand(time(NULL));
     int size = 11;
     char** enemyField = createField(size);
     char** myField = createField(size);
     bool menu = true; // Окно стартового меню
     bool arrangeShips = false; // Окно расстановки кораблей
+    bool autoArrangeShips = false; // Окно автоматической расстановки кораблей
     bool battle = false; // Окно сражения
     bool shipsFull = false; bool* shipsFullPtr = &shipsFull; // Расставлены корабли или нет
     while (true) {
@@ -29,11 +32,22 @@ int main()
             if (checkMenu == 1) {
                 menu = false;
                 arrangeShips = true;
+                autoArrangeShips = false;
+                battle = false;
                 continue;
             }
             else if (checkMenu == 2) {
                 menu = false;
+                arrangeShips = false;
+                autoArrangeShips = false;
                 battle = true;
+                continue;
+            }
+            else if (checkMenu == 3) {
+                menu = false;
+                arrangeShips = false;
+                autoArrangeShips = true;
+                battle = false;
                 continue;
             }
             else {
@@ -62,6 +76,28 @@ int main()
                 continue;
             }
         }
+        if (autoArrangeShips) { // Окно автоматической расстановки кораблей
+            int check = automaticFillField(enemyField, myField, size, shipsFullPtr);
+            if (check == 1) {
+                autoArrangeShips = false;
+                battle = true;
+            }
+            else if (check == 2) {
+                delete[]myField;
+                myField = createField(size);
+                shipsFull = false;
+                continue;
+            }
+            else if (check == 3) {
+                if (!shipsFull) {
+                    delete[]myField;
+                    myField = createField(size);
+                }
+                menu = true;
+                arrangeShips = false;
+                continue;
+            }
+        }
         if (battle) { // Окно сражения
             cout << "Start Battle!" << endl;
         }
@@ -69,7 +105,7 @@ int main()
 }
 
 int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {
-    int i = 0;
+    int i = 0; int timer = 25;
     char* decks = new char[6];
     bool fullShips = false;
     if (!*shipsFullPtr) {
@@ -79,24 +115,40 @@ int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPt
             cout << " -------------------------------------------" << endl;
             printBattleField(efield, mfield, size);
             cout << endl;
-            cout << "Противник уже расставил корабли, дело за тобой!" << endl;
+            /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
             cout << "Используй координатную сетку для указания места установки корабля." << endl;
             cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
             cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
-            cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;
+            cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
             if (i == 0) {
-                cout << "Установи четырехпалубник: ";
-                cin >> decks;
-
+                //cout << "Установи четырехпалубник: ";
+                
+                for (int j = 0; j < 6; j++) {
+                    if (j == 0 || j == 3) {
+                        decks[j] = rand() % 10 + 65;
+                    }
+                    else if (j == 2) {
+                        decks[j] = '-';
+                    }
+                    else if (j == 1 || j == 4) {
+                        decks[j] = rand() % 10 + 48;
+                    }
+                    else if (j == 5) {
+                        decks[j] = '\0';
+                    }
+                }
+                Sleep(timer);
+                //cout << endl << decks << endl;
+                //system("pause");
                 // Здесь будем рандомить
 
-                if (!strcmp(decks, "reset")) {
+                /*if (!strcmp(decks, "reset")) {
                     return 2;
                 }
                 else if (!strcmp(decks, "exit")) {
                     return 3;
-                }
-                if (!checkShip(decks, 4)) {
+                }*/
+                if (!checkShip(decks, 4) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -106,15 +158,29 @@ int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPt
                 }
             }
             else if (i == 1 || i == 2) {
-                cout << "Установи трехпалубник: ";
-                cin >> decks;
-                if (!strcmp(decks, "reset")) {
+                //cout << "Установи трехпалубник: ";
+                for (int j = 0; j < 6; j++) {
+                    if (j == 0 || j == 3) {
+                        decks[j] = rand() % 10 + 65;
+                    }
+                    else if (j == 2) {
+                        decks[j] = '-';
+                    }
+                    else if (j == 1 || j == 4) {
+                        decks[j] = rand() % 10 + 48;
+                    }
+                    else if (j == 5) {
+                        decks[j] = '\0';
+                    }
+                }
+                Sleep(timer);
+                /*if (!strcmp(decks, "reset")) {
                     return 2;
                 }
                 else if (!strcmp(decks, "exit")) {
                     return 3;
-                }
-                if (!checkShip(decks, 3)) {
+                }*/
+                if (!checkShip(decks, 3) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -124,15 +190,29 @@ int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPt
                 }
             }
             else if (i > 2 && i < 6) {
-                cout << "Установи двупалубник: ";
-                cin >> decks;
-                if (!strcmp(decks, "reset")) {
+                //cout << "Установи двупалубник: ";
+                for (int j = 0; j < 6; j++) {
+                    if (j == 0 || j == 3) {
+                        decks[j] = rand() % 10 + 65;
+                    }
+                    else if (j == 2) {
+                        decks[j] = '-';
+                    }
+                    else if (j == 1 || j == 4) {
+                        decks[j] = rand() % 10 + 48;
+                    }
+                    else if (j == 5) {
+                        decks[j] = '\0';
+                    }
+                }
+                Sleep(timer);
+                /*if (!strcmp(decks, "reset")) {
                     return 2;
                 }
                 else if (!strcmp(decks, "exit")) {
                     return 3;
-                }
-                if (!checkShip(decks, 2)) {
+                }*/
+                if (!checkShip(decks, 2) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -142,15 +222,32 @@ int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPt
                 }
             }
             else if (i > 5 && i < 10) {
-                cout << "Установи однопалубник: ";
-                cin >> decks;
-                if (!strcmp(decks, "reset")) {
+                //cout << "Установи однопалубник: ";
+
+                for (int j = 0; j < 6; j++) {
+                    if (j == 0) {
+                        decks[j] = rand() % 10 + 65;
+                        decks[3] = decks[j];
+                    }
+                    else if (j == 2) {
+                        decks[j] = '-';
+                    }
+                    else if (j == 1) {
+                        decks[j] = rand() % 10 + 48;
+                        decks[4] = decks[j];
+                    }
+                    else if (j == 5) {
+                        decks[j] = '\0';
+                    }
+                }
+                Sleep(timer);
+                /*if (!strcmp(decks, "reset")) {
                     return 2;
                 }
                 else if (!strcmp(decks, "exit")) {
                     return 3;
-                }
-                if (!checkShip(decks, 1)) {
+                }*/
+                if (!checkShip(decks, 1) && !checkField(mfield, decks)) {
                     createShip(mfield, decks);
                     i++;
                     continue;
@@ -230,7 +327,8 @@ int mainMenu(bool* shipsFullPtr) {
     
     cout << endl;
     cout << "1 - Расставить корабли" << endl;
-    cout << "2 - Начать сражение";
+    cout << "2 - Начать сражение" << endl;
+    cout << "3 - Автоматическая расстановка кораблей";
     (*shipsFullPtr) ? cout << " (Корабли расставлены!)" : cout << " (Необходимо расставить корабли!)";
     cout << endl;
     cin >> start;
@@ -239,6 +337,9 @@ int mainMenu(bool* shipsFullPtr) {
     }
     else if (start == 2) {
         return 2;
+    }
+    else if (start == 3) {
+        return 3;
     }
     else {
         return 0;
@@ -421,23 +522,37 @@ int checkShip(char* decks, int size) {                      //  Функия п�
 
 int checkField(char** field, char* decks) {  // Функция проверки игрового поля на возможность установки корабля
     if (decks[1] == decks[4]) {
+        if (decks[0] > decks[3]) {
+            swap(decks[0], decks[3]);
+        }
+        int test = 0;
         for (int j = decks[0] - 64; j <= decks[3] - 64; j++) {
-            if (field[decks[1] - 47][j] == ' ') {
-                return 1;
+            if (field[decks[1] - 47][j] == ' ' || field[decks[1] - 47][j] == '#') {
+                test++;
             }
-            else {
-                return 0;
-            }
+        }
+        if (test == 0) {
+            return 0;
+        }
+        else {
+            return 1;
         }
     }
     else if (decks[0] == decks[3]) {
+        if (decks[1] > decks[4]) {
+            swap(decks[1], decks[4]);
+        }
+        int test = 0;
         for (int i = decks[1] - 47; i <= decks[4] - 47; i++) {
-            if (field[i][decks[0] - 64] == ' ') {
-                return 1;
+            if (field[i][decks[0] - 64] == ' ' || field[i][decks[0] - 64] == '#') {
+                test++;
             }
-            else {
-                return 0;
-            }
+        }
+        if (test == 0) {
+            return 0;
+        }
+        else {
+            return 1;
         }
     }
 }
