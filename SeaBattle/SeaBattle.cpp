@@ -139,26 +139,49 @@ int main()
 
 int battle(char** enemyField, char** myField, char** tempField, int size, HANDLE console) {
     char* str = new char[3];
+    bool player = true;
+    bool computer = false;
     while (true) {
         system("cls");
         SetConsoleTextAttribute(console, FOREGROUND_BLUE);
         printBattleField(tempField, myField, size);
         SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         cout << endl;
-        cout << "Выстрел: ";
-        cin >> str;
-        if (!strcmp(str, "pause")) {
-            return 1;
-        }
-        else if (!strcmp(str, "exit")) {
-            return 2;
-        }
-        if (enemyField[str[1] - 47][str[0] - 64] == '#') {
-            tempField[str[1] - 47][str[0] - 64] = 'X';
+        if (player) {
+            cout << "Выстрел: ";
+            cin >> str;
+            if (!strcmp(str, "pause")) {
+                return 1;
+            }
+            else if (!strcmp(str, "exit")) {
+                return 2;
+            }
+            if (enemyField[str[1] - 47][str[0] - 64] == '#') {
+                tempField[str[1] - 47][str[0] - 64] = 'X';
+            }
+            else {
+                tempField[str[1] - 47][str[0] - 64] = ' ';
+                player = false;
+            }
         }
         else {
-            tempField[str[1] - 47][str[0] - 64] = ' ';
+            cout << "Выстрел компьютера: ";
+            cin >> str;
+            if (!strcmp(str, "pause")) {
+                return 1;
+            }
+            else if (!strcmp(str, "exit")) {
+                return 2;
+            }
+            if (enemyField[str[1] - 47][str[0] - 64] == '#') {
+                tempField[str[1] - 47][str[0] - 64] = 'X';
+            }
+            else {
+                tempField[str[1] - 47][str[0] - 64] = ' ';
+                player = true;
+            }
         }
+        
     }
 }
 
