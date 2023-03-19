@@ -6,17 +6,17 @@
 #include <stdio.h>
 using namespace std;
 char** createField(int size);
-void printBattleField(char** enemy, char** my, int size);
+void printBattleField(char** enemy, char** my, int size, HANDLE console);
 void printMyBattleField(char** enemy, char** my, int size);
 void createShip(char** array, char* str);
 int checkShip(char* decks, int size);
 int checkField(char** field, char* decks);
 int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* enemyShipsFullPtr, HANDLE console);
-int mainMenu(bool* shipsFullPtr, bool* pausePtr, HANDLE console);
-int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
+int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console);
+//int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
 int automaticFF(char** field, bool* shipsFullPtr, int size);
-int battle(char** enemyField, char** myField, char** tempField, int size, HANDLE console);
-
+int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsComp, HANDLE console);
+char* attack(char** field);
 int main()
 {
     setlocale(LC_ALL, "RUS");
@@ -33,9 +33,11 @@ int main()
     bool shipsFullFlag = false; bool* shipsFullFlagPtr = &shipsFullFlag; // Расставлены корабли или нет
     bool pauseFlag = false; bool* pauseFlagPtr = &pauseFlag;
     bool enemyShipsFull = false; bool* enemyShipsFullPtr = &enemyShipsFull;
+    bool playerWin = false; bool* playerWinPtr = &playerWin;
+    bool compVsComp = false; bool* compVsCompPtr = &compVsComp;
     while (true) {
         if (menu) { //  Окно меню
-            int checkMenu = mainMenu(shipsFullFlagPtr, pauseFlagPtr, console);
+            int checkMenu = mainMenu(shipsFullFlagPtr, pauseFlagPtr, compVsCompPtr, console);
             if (checkMenu == 1) {
                 if (shipsFullFlag) {
                     if (pauseFlag) {
@@ -56,6 +58,8 @@ int main()
                 if (pauseFlag) {
                     continue;
                 }
+                delete[]tempField;
+                tempField = createField(size);
                 automaticFF(enemyField, enemyShipsFullPtr, size);
                 automaticFF(myField, shipsFullFlagPtr, size);
                 continue;
@@ -81,6 +85,15 @@ int main()
                 else {
                     continue;
                 }
+            }
+            else if (checkMenu == 5) {
+                if (compVsComp) {
+                    compVsComp = false;
+                }
+                else {
+                    compVsComp = true;
+                }
+                continue;
             }
             else {
                 continue;
@@ -113,8 +126,7 @@ int main()
             }
         }
         if (battleField) { // Окно сражения  
-            
-            int checkBattle = battle(enemyField, myField, tempField, size, console);
+            int checkBattle = battle(enemyField, myField, tempField, size, playerWinPtr, &compVsComp, console);
             if (checkBattle == 1) {
                 battleField = false;
                 menu = true;
@@ -133,23 +145,53 @@ int main()
                 enemyField = createField(size);
                 continue;
             }
+            else if (checkBattle == 0) {
+                (playerWin)?cout << "PLAYER WIN!!!":cout << "COMPUTER WIN!!!";
+                system("pause");
+                battleField = false;
+                pauseFlag = false;
+                arrangeShips = false;
+                shipsFullFlag = false;
+                playerWin = false;
+                enemyShipsFull = false;
+                menu = true;
+            }
         }
     }
 }
 
-int battle(char** enemyField, char** myField, char** tempField, int size, HANDLE console) {
-    char* str = new char[3];
+int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsCompPtr, HANDLE console) {
+    char* str = new char[5];
     bool player = true;
     bool computer = false;
+    int countPlayer = 0;
+    int countComputer = 0;
     while (true) {
         system("cls");
         SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-        printBattleField(tempField, myField, size);
+        printBattleField(tempField, myField, size, console);
+        if (countPlayer == 20) {
+            *playerWinPtr = true;
+            return 0;
+        }
+        if (countComputer == 20) {
+            return 0;
+            *playerWinPtr = false;
+        }
+        cout << endl;
+        cout << "Попадания:" << endl << "Первый игрок: " << countPlayer << endl << "Второй игрок: " << countComputer << endl;
         SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         cout << endl;
         if (player) {
             cout << "Выстрел: ";
-            cin >> str;
+            if (*compVsCompPtr) {
+                str = attack(tempField);
+                //str[0] = rand() % 10 + 65;
+                //str[1] = rand() % 10 + 48;
+            }
+            else {
+                cin >> str;
+            }
             if (!strcmp(str, "pause")) {
                 return 1;
             }
@@ -157,31 +199,72 @@ int battle(char** enemyField, char** myField, char** tempField, int size, HANDLE
                 return 2;
             }
             if (enemyField[str[1] - 47][str[0] - 64] == '#') {
-                tempField[str[1] - 47][str[0] - 64] = 'X';
+                if (tempField[str[1] - 47][str[0] - 64] == 'X') {
+                    continue;
+                }
+                else {
+                    tempField[str[1] - 47][str[0] - 64] = 'X';
+                    countPlayer++;
+                }
             }
+            //else if (tempField[str[1] - 47][str[0] - 64] == '*') {
+            //    continue;
+            //}
+            //else if (tempField[str[1] - 47][str[0] - 64] == 'X') {
+            //    continue;
+            //}
             else {
-                tempField[str[1] - 47][str[0] - 64] = ' ';
+                tempField[str[1] - 47][str[0] - 64] = '*';
                 player = false;
             }
+            Sleep(1000);
         }
         else {
             cout << "Выстрел компьютера: ";
-            cin >> str;
-            if (!strcmp(str, "pause")) {
-                return 1;
+            str = attack(myField);
+            //str[0] = rand() % 10 + 65;
+            //str[1] = rand() % 10 + 48;
+            //cin >> str;
+            //if (!strcmp(str, "pause")) {
+            //    return 1;
+            //}
+            //else if (!strcmp(str, "exit")) {
+            //    return 2;
+            //}
+            if (myField[str[1] - 47][str[0] - 64] == '#') {
+                myField[str[1] - 47][str[0] - 64] = 'X';
+                countComputer++;
             }
-            else if (!strcmp(str, "exit")) {
-                return 2;
-            }
-            if (enemyField[str[1] - 47][str[0] - 64] == '#') {
-                tempField[str[1] - 47][str[0] - 64] = 'X';
-            }
+            //else if (myField[str[1] - 47][str[0] - 64] == '*') {
+            //    continue;
+            //}
+            //else if (myField[str[1] - 47][str[0] - 64] == 'X') {
+            //    continue;
+            //}
             else {
-                tempField[str[1] - 47][str[0] - 64] = ' ';
+                myField[str[1] - 47][str[0] - 64] = '*';
                 player = true;
             }
+            Sleep(1000);
+        } 
+    }
+}
+
+char* attack(char** field) {
+    char* str = new char[3];
+    str[2] = '\0';
+    while (true) {
+        str[0] = rand() % 10 + 65;
+        str[1] = rand() % 10 + 48;
+        if (field[str[1] - 47][str[0] - 64] == '*') {
+            continue;
         }
-        
+        else if (field[str[1] - 47][str[0] - 64] == 'X') {
+            continue;
+        }
+        else {
+            return str;
+        }
     }
 }
 
@@ -301,215 +384,215 @@ int automaticFF(char** field, bool* shipsFullPtr, int size) {  // Автомат
     return 0;
 }
 
-int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {  //  Первый вариант автоматической расстановки кораблей, теперь не использую, использую automaticFF
-    int i = 0; int timer = 25;
-    char* decks = new char[6];
-    bool fullShips = false;
-    if (!*shipsFullPtr) {
-        while (!fullShips) {
-            system("cls");
-            cout << " Морской бой!" << endl;
-            cout << " -------------------------------------------" << endl;
-            printBattleField(efield, mfield, size);
-            cout << endl;
-            /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
-            cout << "Используй координатную сетку для указания места установки корабля." << endl;
-            cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
-            cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
-            cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
-            if (i == 0) {
-                //cout << "Установи четырехпалубник: ";
-                
-                for (int j = 0; j < 6; j++) {
-                    if (j == 0 || j == 3) {
-                        decks[j] = rand() % 10 + 65;
-                    }
-                    else if (j == 2) {
-                        decks[j] = '-';
-                    }
-                    else if (j == 1 || j == 4) {
-                        decks[j] = rand() % 10 + 48;
-                    }
-                    else if (j == 5) {
-                        decks[j] = '\0';
-                    }
-                }
-                Sleep(timer);
-                //cout << endl << decks << endl;
-                //system("pause");
-                // Здесь будем рандомить
+//int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {  //  Первый вариант автоматической расстановки кораблей, теперь не использую, использую automaticFF
+//    int i = 0; int timer = 25;
+//    char* decks = new char[6];
+//    bool fullShips = false;
+//    if (!*shipsFullPtr) {
+//        while (!fullShips) {
+//            system("cls");
+//            cout << " Морской бой!" << endl;
+//            cout << " -------------------------------------------" << endl;
+//            printBattleField(efield, mfield, size);
+//            cout << endl;
+//            /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
+//            cout << "Используй координатную сетку для указания места установки корабля." << endl;
+//            cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
+//            cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
+//            cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
+//            if (i == 0) {
+//                //cout << "Установи четырехпалубник: ";
+//                
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0 || j == 3) {
+//                        decks[j] = rand() % 10 + 65;
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1 || j == 4) {
+//                        decks[j] = rand() % 10 + 48;
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                //cout << endl << decks << endl;
+//                //system("pause");
+//                // Здесь будем рандомить
+//
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 4) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            else if (i == 1 || i == 2) {
+//                //cout << "Установи трехпалубник: ";
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0 || j == 3) {
+//                        decks[j] = rand() % 10 + 65;
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1 || j == 4) {
+//                        decks[j] = rand() % 10 + 48;
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 3) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            else if (i > 2 && i < 6) {
+//                //cout << "Установи двупалубник: ";
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0 || j == 3) {
+//                        decks[j] = rand() % 10 + 65;
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1 || j == 4) {
+//                        decks[j] = rand() % 10 + 48;
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 2) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            else if (i > 5 && i < 10) {
+//                //cout << "Установи однопалубник: ";
+//
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0) {
+//                        decks[j] = rand() % 10 + 65;
+//                        decks[3] = decks[j];
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1) {
+//                        decks[j] = rand() % 10 + 48;
+//                        decks[4] = decks[j];
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 1) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            if (i == 10) {
+//                fullShips = true;
+//                *shipsFullPtr = true;
+//            }
+//        }
+//        int check = 0;
+//        cout << endl << "Корабли расставлены!" << endl;
+//        cout << "1 - Начать сражение" << endl;
+//        cout << "2 - Переставить корабли" << endl;
+//        cout << "3 - Выйти в меню" << endl;
+//        cin >> check;
+//        if (check == 1) {
+//            return 1;
+//        }
+//        else if (check == 2) {
+//            return 2;
+//        }
+//        else if (check == 3) {
+//            return 3;
+//        }
+//        else {
+//            return 0;
+//        }
+//    }
+//    else {
+//        system("cls");
+//        cout << " Морской бой!" << endl;
+//        cout << " -------------------------------------------" << endl;
+//        printBattleField(efield, mfield, size);
+//        cout << endl;
+//        /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
+//        cout << "Используй координатную сетку для указания места установки корабля." << endl;
+//        cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
+//        cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
+//        cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
+//        int check = 0;
+//        cout << endl << "Корабли расставлены!" << endl;
+//        cout << "1 - Начать сражение" << endl;
+//        cout << "2 - Переставить корабли" << endl;
+//        cout << "3 - Выйти в меню" << endl;
+//        cin >> check;
+//        if (check == 1) {
+//            return 1;
+//        }
+//        else if (check == 2) {
+//            return 2;
+//        }
+//        else if (check == 3) {
+//            return 3;
+//        }
+//        else {
+//            return 0;
+//        }
+//    }
+//}
 
-                /*if (!strcmp(decks, "reset")) {
-                    return 2;
-                }
-                else if (!strcmp(decks, "exit")) {
-                    return 3;
-                }*/
-                if (!checkShip(decks, 4) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
-                    i++;
-                    continue;
-                }
-                else {
-                    continue;
-                }
-            }
-            else if (i == 1 || i == 2) {
-                //cout << "Установи трехпалубник: ";
-                for (int j = 0; j < 6; j++) {
-                    if (j == 0 || j == 3) {
-                        decks[j] = rand() % 10 + 65;
-                    }
-                    else if (j == 2) {
-                        decks[j] = '-';
-                    }
-                    else if (j == 1 || j == 4) {
-                        decks[j] = rand() % 10 + 48;
-                    }
-                    else if (j == 5) {
-                        decks[j] = '\0';
-                    }
-                }
-                Sleep(timer);
-                /*if (!strcmp(decks, "reset")) {
-                    return 2;
-                }
-                else if (!strcmp(decks, "exit")) {
-                    return 3;
-                }*/
-                if (!checkShip(decks, 3) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
-                    i++;
-                    continue;
-                }
-                else {
-                    continue;
-                }
-            }
-            else if (i > 2 && i < 6) {
-                //cout << "Установи двупалубник: ";
-                for (int j = 0; j < 6; j++) {
-                    if (j == 0 || j == 3) {
-                        decks[j] = rand() % 10 + 65;
-                    }
-                    else if (j == 2) {
-                        decks[j] = '-';
-                    }
-                    else if (j == 1 || j == 4) {
-                        decks[j] = rand() % 10 + 48;
-                    }
-                    else if (j == 5) {
-                        decks[j] = '\0';
-                    }
-                }
-                Sleep(timer);
-                /*if (!strcmp(decks, "reset")) {
-                    return 2;
-                }
-                else if (!strcmp(decks, "exit")) {
-                    return 3;
-                }*/
-                if (!checkShip(decks, 2) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
-                    i++;
-                    continue;
-                }
-                else {
-                    continue;
-                }
-            }
-            else if (i > 5 && i < 10) {
-                //cout << "Установи однопалубник: ";
-
-                for (int j = 0; j < 6; j++) {
-                    if (j == 0) {
-                        decks[j] = rand() % 10 + 65;
-                        decks[3] = decks[j];
-                    }
-                    else if (j == 2) {
-                        decks[j] = '-';
-                    }
-                    else if (j == 1) {
-                        decks[j] = rand() % 10 + 48;
-                        decks[4] = decks[j];
-                    }
-                    else if (j == 5) {
-                        decks[j] = '\0';
-                    }
-                }
-                Sleep(timer);
-                /*if (!strcmp(decks, "reset")) {
-                    return 2;
-                }
-                else if (!strcmp(decks, "exit")) {
-                    return 3;
-                }*/
-                if (!checkShip(decks, 1) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
-                    i++;
-                    continue;
-                }
-                else {
-                    continue;
-                }
-            }
-            if (i == 10) {
-                fullShips = true;
-                *shipsFullPtr = true;
-            }
-        }
-        int check = 0;
-        cout << endl << "Корабли расставлены!" << endl;
-        cout << "1 - Начать сражение" << endl;
-        cout << "2 - Переставить корабли" << endl;
-        cout << "3 - Выйти в меню" << endl;
-        cin >> check;
-        if (check == 1) {
-            return 1;
-        }
-        else if (check == 2) {
-            return 2;
-        }
-        else if (check == 3) {
-            return 3;
-        }
-        else {
-            return 0;
-        }
-    }
-    else {
-        system("cls");
-        cout << " Морской бой!" << endl;
-        cout << " -------------------------------------------" << endl;
-        printBattleField(efield, mfield, size);
-        cout << endl;
-        /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
-        cout << "Используй координатную сетку для указания места установки корабля." << endl;
-        cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
-        cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
-        cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
-        int check = 0;
-        cout << endl << "Корабли расставлены!" << endl;
-        cout << "1 - Начать сражение" << endl;
-        cout << "2 - Переставить корабли" << endl;
-        cout << "3 - Выйти в меню" << endl;
-        cin >> check;
-        if (check == 1) {
-            return 1;
-        }
-        else if (check == 2) {
-            return 2;
-        }
-        else if (check == 3) {
-            return 3;
-        }
-        else {
-            return 0;
-        }
-    }
-}
-
-int mainMenu(bool* shipsFullPtr, bool* pausePtr, HANDLE console) {
+int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console) {
     system("cls");
     int start = 0;
     cout << endl;
@@ -554,7 +637,14 @@ int mainMenu(bool* shipsFullPtr, bool* pausePtr, HANDLE console) {
         cout << "4 - Продолжить сражение";
         (*pausePtr) ? cout << " (Игра начата)" << endl : cout << " (Игра еще не начата!)" << endl;
     }
-    
+    if (*compVsCompPtr) {
+        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        cout << "5 - Режим игры (Компьютер против компьютера)" << endl;
+    }
+    else {
+        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        cout << "5 - Режим игры (Игрок против компьютера)" << endl;
+    }
     cout << endl;
     cin >> start;
     if (start == 1) {
@@ -568,6 +658,9 @@ int mainMenu(bool* shipsFullPtr, bool* pausePtr, HANDLE console) {
     }
     else if (start == 4) {
         return 4;
+    }
+    else if (start == 5) {
+        return 5;
     }
     else {
         return 0;
@@ -847,15 +940,49 @@ void createShip(char** field, char* decks) {                            // Фу�
     }
 }
 
-void printBattleField(char** enemy, char** my, int size) {          //  Функиця выводит на экран два игровых поля в горизонтальной виде
+void printBattleField(char** enemy, char** my, int size, HANDLE console) {          //  Функиця выводит на экран два игровых поля в горизонтальной виде
     cout << " Поле противника" << "\t" << " Ваше поле" << endl;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            cout << " " << enemy[i][j];
+            if (enemy[i][j] == 'X') {
+                SetConsoleTextAttribute(console, FOREGROUND_RED);
+                cout << " " << enemy[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
+            else if (enemy[i][j] == '#') {
+                SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+                cout << " " << enemy[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
+            else if (enemy[i][j] == '*') {
+                SetConsoleTextAttribute(console, FOREGROUND_INTENSITY);
+                cout << " " << enemy[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
+            else {
+                cout << " " << enemy[i][j];
+            }
         }
         cout << "\t";
         for (int j = 0; j < size; j++) {
-            cout << " " << my[i][j];
+            if (my[i][j] == 'X') {
+                SetConsoleTextAttribute(console, FOREGROUND_RED);
+                cout << " " << my[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
+            else if (my[i][j] == '#') {
+                SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+                cout << " " << my[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
+            else if (my[i][j] == '*') {
+                SetConsoleTextAttribute(console, FOREGROUND_INTENSITY);
+                cout << " " << my[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
+            else {
+                cout << " " << my[i][j];
+            }
         }
         cout << endl;
     }
