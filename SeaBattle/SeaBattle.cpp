@@ -8,15 +8,17 @@ using namespace std;
 char** createField(int size);
 void printBattleField(char** enemy, char** my, int size, HANDLE console);
 void printMyBattleField(char** enemy, char** my, int size);
-void createShip(char** array, char* str);
+void createShip(char** array, char* str, char rang);
+void deathShip(char** field, char* decks);
 int checkShip(char* decks, int size);
 int checkField(char** field, char* decks);
-int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* enemyShipsFullPtr, HANDLE console);
-int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console);
+int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* enemyShipsFullPtr, HANDLE console, char** shipsEnemy, char** shipsMy);
+int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships);
 //int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
-int automaticFF(char** field, bool* shipsFullPtr, int size);
-int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsComp, HANDLE console);
+int automaticFF(char** field, bool* shipsFullPtr, int size, char** ships);
+int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsComp, HANDLE console, char** ships, char** shipsEn);
 char* attack(char** field);
+
 int main()
 {
     setlocale(LC_ALL, "RUS");
@@ -26,6 +28,14 @@ int main()
     char** enemyField = createField(size);
     char** myField = createField(size);
     char** tempField = createField(size);
+    char** shipsEnemy = new char* [10];
+    for (int i = 0; i < 10; i++) {
+        shipsEnemy[i] = new char[6];
+    }
+    char** shipsMy = new char* [10];
+    for (int i = 0; i < 10; i++) {
+        shipsMy[i] = new char[6];
+    }
     bool menu = true; // Окно стартового меню
     bool arrangeShips = false; // Окно расстановки кораблей
     bool autoArrangeShips = false; // Окно автоматической расстановки кораблей
@@ -37,7 +47,7 @@ int main()
     bool compVsComp = false; bool* compVsCompPtr = &compVsComp;
     while (true) {
         if (menu) { //  Окно меню
-            int checkMenu = mainMenu(shipsFullFlagPtr, pauseFlagPtr, compVsCompPtr, console);
+            int checkMenu = mainMenu(shipsFullFlagPtr, pauseFlagPtr, compVsCompPtr, console, shipsEnemy);
             if (checkMenu == 1) {
                 if (shipsFullFlag) {
                     if (pauseFlag) {
@@ -60,8 +70,8 @@ int main()
                 }
                 delete[]tempField;
                 tempField = createField(size);
-                automaticFF(enemyField, enemyShipsFullPtr, size);
-                automaticFF(myField, shipsFullFlagPtr, size);
+                automaticFF(enemyField, enemyShipsFullPtr, size, shipsEnemy);
+                automaticFF(myField, shipsFullFlagPtr, size, shipsMy);
                 continue;
             }
             else if (checkMenu == 3) {
@@ -100,7 +110,7 @@ int main()
             }
         }
         if (arrangeShips) { // Окно расстановки кораблей
-            int checkArrangeShips = fillField(enemyField, myField, size, shipsFullFlagPtr, enemyShipsFullPtr, console);
+            int checkArrangeShips = fillField(enemyField, myField, size, shipsFullFlagPtr, enemyShipsFullPtr, console, shipsEnemy, shipsMy);
             if (checkArrangeShips == 1) {
                 arrangeShips = false;
                 battleField = true;
@@ -121,12 +131,12 @@ int main()
                 continue;
             }
             else if (checkArrangeShips == 4) {
-                automaticFF(myField, shipsFullFlagPtr, size);
+                automaticFF(myField, shipsFullFlagPtr, size, shipsMy);
                 continue;
             }
         }
         if (battleField) { // Окно сражения  
-            int checkBattle = battle(enemyField, myField, tempField, size, playerWinPtr, &compVsComp, console);
+            int checkBattle = battle(enemyField, myField, tempField, size, playerWinPtr, &compVsComp, console, shipsEnemy, shipsMy);
             if (checkBattle == 1) {
                 battleField = false;
                 menu = true;
@@ -160,16 +170,83 @@ int main()
     }
 }
 
-int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsCompPtr, HANDLE console) {
+int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsCompPtr, HANDLE console, char** shipsEnemy, char** shipsMy) {
     char* str = new char[5];
     bool player = true;
     bool computer = false;
+    int myShipsArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    int EnemyShipsArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     int countPlayer = 0;
     int countComputer = 0;
     while (true) {
         system("cls");
         SetConsoleTextAttribute(console, FOREGROUND_BLUE);
         printBattleField(tempField, myField, size, console);
+        
+        // Следующий код для отладки, при сборке убрать
+        // Следующий код для отладки, при сборке убрать
+        for (int i = 0; i < 10; i++) {
+            cout << myShipsArray[i] << " ";
+        }
+        cout << endl;
+        for (int i = 0; i < 10; i++) {
+            cout << EnemyShipsArray[i] <<  " ";
+        }
+        cout << endl;
+        for (int i = 0; i < 10; i++) {
+            cout << shipsEnemy[i] << endl;
+        }
+        cout << endl;
+        for (int i = 0; i < 10; i++) {
+            cout << shipsMy[i] << endl;
+        }
+        cout << endl;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (enemyField[i][j] == 'X') {
+                    SetConsoleTextAttribute(console, FOREGROUND_RED);
+                    cout << " " << enemyField[i][j];
+                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+                }
+                else if (enemyField[i][j] == '#') {
+                    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+                    cout << " " << enemyField[i][j];
+                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+                }
+                else if (enemyField[i][j] == '*') {
+                    SetConsoleTextAttribute(console, FOREGROUND_INTENSITY);
+                    cout << " " << enemyField[i][j];
+                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+                }
+                else {
+                    cout << " " << enemyField[i][j];
+                }
+            }
+            cout << "\t";
+            for (int j = 0; j < size; j++) {
+                if (myField[i][j] == 'X') {
+                    SetConsoleTextAttribute(console, FOREGROUND_RED);
+                    cout << " " << myField[i][j];
+                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+                }
+                else if (myField[i][j] == '#') {
+                    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+                    cout << " " << myField[i][j];
+                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+                }
+                else if (myField[i][j] == '*') {
+                    SetConsoleTextAttribute(console, FOREGROUND_INTENSITY);
+                    cout << " " << myField[i][j];
+                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+                }
+                else {
+                    cout << " " << myField[i][j];
+                }
+            }
+            cout << endl;
+        }
+        // Конец отладки
+
         if (countPlayer == 20) {
             *playerWinPtr = true;
             return 0;
@@ -186,8 +263,6 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
             cout << "Выстрел: ";
             if (*compVsCompPtr) {
                 str = attack(tempField);
-                //str[0] = rand() % 10 + 65;
-                //str[1] = rand() % 10 + 48;
             }
             else {
                 cin >> str;
@@ -198,57 +273,122 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
             else if (!strcmp(str, "exit")) {
                 return 2;
             }
-            if (enemyField[str[1] - 47][str[0] - 64] == '#') {
-                if (tempField[str[1] - 47][str[0] - 64] == 'X') {
+            if (enemyField[str[1] - 47][str[0] - 64] > 47 && enemyField[str[1] - 47][str[0] - 64] < 58) {
+                /*if (tempField[str[1] - 47][str[0] - 64] == 'X') {
                     continue;
                 }
                 else {
                     tempField[str[1] - 47][str[0] - 64] = 'X';
                     countPlayer++;
-                }
+                }*/
+                tempField[str[1] - 47][str[0] - 64] = 'X';
+                EnemyShipsArray[enemyField[str[1] - 47][str[0] - 64] - 48]++;
+                countPlayer++;
             }
-            //else if (tempField[str[1] - 47][str[0] - 64] == '*') {
-            //    continue;
-            //}
-            //else if (tempField[str[1] - 47][str[0] - 64] == 'X') {
-            //    continue;
-            //}
             else {
                 tempField[str[1] - 47][str[0] - 64] = '*';
                 player = false;
+            }
+            if (EnemyShipsArray[0] == 4) {
+                deathShip(tempField, shipsEnemy[0]);
+                EnemyShipsArray[0] = 9;
+            }
+            else if (EnemyShipsArray[1] == 3) {
+                deathShip(tempField, shipsEnemy[1]);
+                EnemyShipsArray[1] = 9;
+            }
+            else if (EnemyShipsArray[2] == 3) {
+                deathShip(tempField, shipsEnemy[2]);
+                EnemyShipsArray[2] = 9;
+            }
+            else if (EnemyShipsArray[3] == 2) {
+                deathShip(tempField, shipsEnemy[3]);
+                EnemyShipsArray[3] = 9;
+            }
+            else if (EnemyShipsArray[4] == 2) {
+                deathShip(tempField, shipsEnemy[4]);
+                EnemyShipsArray[4] = 9;
+            }
+            else if (EnemyShipsArray[5] == 2) {
+                deathShip(tempField, shipsEnemy[5]);
+                EnemyShipsArray[5] = 9;
+            }
+            else if (EnemyShipsArray[6] == 1) {
+                deathShip(tempField, shipsEnemy[6]);
+                EnemyShipsArray[6] = 9;
+            }
+            else if (EnemyShipsArray[7] == 1) {
+                deathShip(tempField, shipsEnemy[7]);
+                EnemyShipsArray[7] = 9;
+            }
+            else if (EnemyShipsArray[8] == 1) {
+                deathShip(tempField, shipsEnemy[8]);
+                EnemyShipsArray[8] = 9;
+            }
+            else if (EnemyShipsArray[9] == 1) {
+                deathShip(tempField, shipsEnemy[9]);
+                EnemyShipsArray[9] = 9;
             }
             Sleep(1000);
         }
         else {
             cout << "Выстрел компьютера: ";
             str = attack(myField);
-            //str[0] = rand() % 10 + 65;
-            //str[1] = rand() % 10 + 48;
-            //cin >> str;
-            //if (!strcmp(str, "pause")) {
-            //    return 1;
-            //}
-            //else if (!strcmp(str, "exit")) {
-            //    return 2;
-            //}
-            if (myField[str[1] - 47][str[0] - 64] == '#') {
+            if (myField[str[1] - 47][str[0] - 64] > 47 && myField[str[1] - 47][str[0] - 64] < 58) {
+                myShipsArray[myField[str[1] - 47][str[0] - 64] - 48]++;
                 myField[str[1] - 47][str[0] - 64] = 'X';
                 countComputer++;
             }
-            //else if (myField[str[1] - 47][str[0] - 64] == '*') {
-            //    continue;
-            //}
-            //else if (myField[str[1] - 47][str[0] - 64] == 'X') {
-            //    continue;
-            //}
             else {
                 myField[str[1] - 47][str[0] - 64] = '*';
                 player = true;
+            }
+            if (myShipsArray[0] == 4) {
+                deathShip(myField, shipsMy[0]);
+                myShipsArray[0] = 9;
+            }
+            else if (myShipsArray[1] == 3) {
+                deathShip(myField, shipsMy[1]);
+                myShipsArray[1] = 9;
+            }
+            else if (myShipsArray[2] == 3) {
+                deathShip(myField, shipsMy[2]);
+                myShipsArray[2] = 9;
+            }
+            else if (myShipsArray[3] == 2) {
+                deathShip(myField, shipsMy[3]);
+                myShipsArray[3] = 9;
+            }
+            else if (myShipsArray[4] == 2) {
+                deathShip(myField, shipsMy[4]);
+                myShipsArray[4] = 9;
+            }
+            else if (myShipsArray[5] == 2) {
+                deathShip(myField, shipsMy[5]);
+                myShipsArray[5] = 9;
+            }
+            else if (myShipsArray[6] == 1) {
+                deathShip(myField, shipsMy[6]);
+                myShipsArray[6] = 9;
+            }
+            else if (myShipsArray[7] == 1) {
+                deathShip(myField, shipsMy[7]);
+                myShipsArray[7] = 9;
+            }
+            else if (myShipsArray[8] == 1) {
+                deathShip(myField, shipsMy[8]);
+                myShipsArray[8] = 9;
+            }
+            else if (myShipsArray[9] == 1) {
+                deathShip(myField, shipsMy[9]);
+                myShipsArray[9] = 9;
             }
             Sleep(1000);
         } 
     }
 }
+
+//void deathShip(char** )
 
 char* attack(char** field) {
     char* str = new char[3];
@@ -268,7 +408,7 @@ char* attack(char** field) {
     }
 }
 
-int automaticFF(char** field, bool* shipsFullPtr, int size) {  // Автоматическая расстановка кораблей
+int automaticFF(char** field, bool* shipsFullPtr, int size, char** ships) {  // Автоматическая расстановка кораблей
     for (int i = 1; i < size; i++) {
         for (int j = 1; j < size; j++) {
             field[i][j] = '.';
@@ -294,7 +434,10 @@ int automaticFF(char** field, bool* shipsFullPtr, int size) {  // Автомат
                 }
             }
             if (!checkShip(decks, 4) && !checkField(field, decks)) {
-                createShip(field, decks);
+                createShip(field, decks, i + 48);
+                for (int m = 0; m < 6; m++) {
+                    ships[i][m] = decks[m];
+                }
                 i++;
                 continue;
             }
@@ -318,7 +461,10 @@ int automaticFF(char** field, bool* shipsFullPtr, int size) {  // Автомат
                 }
             }
             if (!checkShip(decks, 3) && !checkField(field, decks)) {
-                createShip(field, decks);
+                createShip(field, decks, i + 48);
+                for (int m = 0; m < 6; m++) {
+                    ships[i][m] = decks[m];
+                }
                 i++;
                 continue;
             }
@@ -342,7 +488,10 @@ int automaticFF(char** field, bool* shipsFullPtr, int size) {  // Автомат
                 }
             }
             if (!checkShip(decks, 2) && !checkField(field, decks)) {
-                createShip(field, decks);
+                createShip(field, decks, i + 48);
+                for (int m = 0; m < 6; m++) {
+                    ships[i][m] = decks[m];
+                }
                 i++;
                 continue;
             }
@@ -368,7 +517,10 @@ int automaticFF(char** field, bool* shipsFullPtr, int size) {  // Автомат
                 }
             }
             if (!checkShip(decks, 1) && !checkField(field, decks)) {
-                createShip(field, decks);
+                createShip(field, decks, i + 48);
+                for (int m = 0; m < 6; m++) {
+                    ships[i][m] = decks[m];
+                }
                 i++;
                 continue;
             }
@@ -592,7 +744,7 @@ int automaticFF(char** field, bool* shipsFullPtr, int size) {  // Автомат
 //    }
 //}
 
-int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console) {
+int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships) {
     system("cls");
     int start = 0;
     cout << endl;
@@ -667,11 +819,11 @@ int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE con
     }
 }
 
-int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* enemyShipsFullPtr, HANDLE console) {  // Функиця расстановки кораблей в ручную
+int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* enemyShipsFullPtr, HANDLE console, char** shipsEnemy, char** shipsMy) {  // Функиця расстановки кораблей в ручную
     int i = 0;
     char* decks = new char[6];
     bool fullShips = false;
-    automaticFF(efield, enemyShipsFullPtr, size);
+    automaticFF(efield, enemyShipsFullPtr, size, shipsEnemy);
     if (!*shipsFullPtr) {
         while (!fullShips) {
             system("cls");
@@ -697,7 +849,10 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* 
                     return 3;
                 }
                 if (!checkShip(decks, 4) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
+                    createShip(mfield, decks, i + 48);
+                    for (int m = 0; m < 6; m++) {
+                        shipsMy[i][m] = decks[m];
+                    }
                     i++;
                     continue;
                 }
@@ -715,7 +870,10 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* 
                     return 3;
                 }
                 if (!checkShip(decks, 3) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
+                    createShip(mfield, decks, i + 48);
+                    for (int m = 0; m < 6; m++) {
+                        shipsMy[i][m] = decks[m];
+                    }
                     i++;
                     continue;
                 }
@@ -733,7 +891,10 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* 
                     return 3;
                 }
                 if (!checkShip(decks, 2) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
+                    createShip(mfield, decks, i + 48);
+                    for (int m = 0; m < 6; m++) {
+                        shipsMy[i][m] = decks[m];
+                    }
                     i++;
                     continue;
                 }
@@ -751,7 +912,10 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* 
                     return 3;
                 }
                 if (!checkShip(decks, 1) && !checkField(mfield, decks)) {
-                    createShip(mfield, decks);
+                    createShip(mfield, decks, i + 48);
+                    for (int m = 0; m < 6; m++) {
+                        shipsMy[i][m] = decks[m];
+                    }
                     i++;
                     continue;
                 }
@@ -863,7 +1027,7 @@ int checkField(char** field, char* decks) {  // Функция проверки 
         }
         int test = 0;
         for (int j = decks[0] - 64; j <= decks[3] - 64; j++) {
-            if (field[decks[1] - 47][j] == ' ' || field[decks[1] - 47][j] == '#') {
+            if (field[decks[1] - 47][j] == ' ' || field[decks[1] - 47][j] == '#' || field[decks[1] - 47][j] > 47 && field[decks[1] - 47][j] < 58) {
                 test++;
             }
         }
@@ -880,7 +1044,7 @@ int checkField(char** field, char* decks) {  // Функция проверки 
         }
         int test = 0;
         for (int i = decks[1] - 47; i <= decks[4] - 47; i++) {
-            if (field[i][decks[0] - 64] == ' ' || field[i][decks[0] - 64] == '#') {
+            if (field[i][decks[0] - 64] == ' ' || field[i][decks[0] - 64] == '#' || field[i][decks[0] - 64] > 47 && field[i][decks[0] - 64] < 58) {
                 test++;
             }
         }
@@ -893,7 +1057,7 @@ int checkField(char** field, char* decks) {  // Функция проверки 
     }
 }
 
-void createShip(char** field, char* decks) {                            // Функция усиановки корабля на поле
+void createShip(char** field, char* decks, char rang) {                            // Функция установки корабля на поле
     if (decks[1] == decks[4]) {
         for (int j = decks[0] - 64 - 1; j <= decks[3] - 64 + 1; j++) {
             if (j == decks[0] - 64 - 1 || j == decks[3] - 64 + 1) {
@@ -902,7 +1066,7 @@ void createShip(char** field, char* decks) {                            // Фу�
                 }
             }
             else {
-                field[decks[1] - 47][j] = '#';
+                field[decks[1] - 47][j] = rang;
             }
             if (decks[1] - 47 - 1 > 0) {
                 if (j != 0 && j != 11) {
@@ -924,7 +1088,7 @@ void createShip(char** field, char* decks) {                            // Фу�
                 } 
             }
             else {
-                field[i][decks[0] - 64] = '#';
+                field[i][decks[0] - 64] = rang;
             }
             if (decks[0] - 64 - 1 > 0) {
                 if (i != 0 && i != 11) {
@@ -934,6 +1098,53 @@ void createShip(char** field, char* decks) {                            // Фу�
             if (decks[0] - 64 + 1 < 11) {
                 if (i != 0 && i != 11) {
                     field[i][decks[0] - 64 + 1] = ' ';
+                }
+            }
+        }
+    }
+}
+
+void deathShip(char** field, char* decks) {
+    if (decks[1] == decks[4]) {
+        for (int j = decks[0] - 64 - 1; j <= decks[3] - 64 + 1; j++) {
+            if (j == decks[0] - 64 - 1 || j == decks[3] - 64 + 1) {
+                if (j != 0 && j != 11) {
+                    field[decks[1] - 47][j] = '*';
+                }
+            }
+            else {
+                field[decks[1] - 47][j] = 'X';
+            }
+            if (decks[1] - 47 - 1 > 0) {
+                if (j != 0 && j != 11) {
+                    field[decks[1] - 47 - 1][j] = '*';
+                }
+            }
+            if (decks[1] - 47 + 1 < 11) {
+                if (j != 0 && j != 11) {
+                    field[decks[1] - 47 + 1][j] = '*';
+                }
+            }
+        }
+    }
+    else if (decks[0] == decks[3]) {
+        for (int i = decks[1] - 47 - 1; i <= decks[4] - 47 + 1; i++) {
+            if (i == decks[1] - 47 - 1 || i == decks[4] - 47 + 1) {
+                if (i != 0 && i != 11) {
+                    field[i][decks[0] - 64] = '*';
+                }
+            }
+            else {
+                field[i][decks[0] - 64] = 'X';
+            }
+            if (decks[0] - 64 - 1 > 0) {
+                if (i != 0 && i != 11) {
+                    field[i][decks[0] - 64 - 1] = '*';
+                }
+            }
+            if (decks[0] - 64 + 1 < 11) {
+                if (i != 0 && i != 11) {
+                    field[i][decks[0] - 64 + 1] = '*';
                 }
             }
         }
