@@ -1,4 +1,4 @@
 ﻿  SeaBattle.cpp
-C:\Users\L1nk\source\repos\SeaBattle\SeaBattle\SeaBattle.cpp(25,15): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
-C:\Users\L1nk\source\repos\SeaBattle\SeaBattle\SeaBattle.cpp(1058): warning C4715: checkField: значение возвращается не при всех путях выполнения
-  SeaBattle.vcxproj -> C:\Users\L1nk\source\repos\SeaBattle\x64\Debug\SeaBattle.exe
+C:\Users\std\source\repos\SeaBattle\SeaBattle\SeaBattle\SeaBattle.cpp(25,15): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+C:\Users\std\source\repos\SeaBattle\SeaBattle\SeaBattle\SeaBattle.cpp(1058): warning C4715: checkField: значение возвращается не при всех путях выполнения
+  SeaBattle.vcxproj -> C:\Users\std\source\repos\SeaBattle\SeaBattle\x64\Debug\SeaBattle.exe

@@ -185,7 +185,7 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
         
         // Следующий код для отладки, при сборке убрать
         // Следующий код для отладки, при сборке убрать
-        for (int i = 0; i < 10; i++) {
+        /*for (int i = 0; i < 10; i++) {
             cout << myShipsArray[i] << " ";
         }
         cout << endl;
@@ -244,7 +244,7 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
                 }
             }
             cout << endl;
-        }
+        }*/
         // Конец отладки
 
         if (countPlayer == 20) {
@@ -1170,6 +1170,11 @@ void printBattleField(char** enemy, char** my, int size, HANDLE console) {      
                 cout << " " << enemy[i][j];
                 SetConsoleTextAttribute(console, FOREGROUND_BLUE);
             }
+            else if (j == 0 || i == 0) {
+                SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+                cout << " " << enemy[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
             else {
                 cout << " " << enemy[i][j];
             }
@@ -1181,14 +1186,19 @@ void printBattleField(char** enemy, char** my, int size, HANDLE console) {      
                 cout << " " << my[i][j];
                 SetConsoleTextAttribute(console, FOREGROUND_BLUE);
             }
-            else if (my[i][j] == '#') {
+            else if (/*my[i][j] == '#'*/ my[i][j] > 47 && my[i][j] < 58 && j != 0) {
                 SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-                cout << " " << my[i][j];
+                cout << " " << /*my[i][j]*/ '#';
                 SetConsoleTextAttribute(console, FOREGROUND_BLUE);
             }
             else if (my[i][j] == '*') {
                 SetConsoleTextAttribute(console, FOREGROUND_INTENSITY);
                 cout << " " << my[i][j];
+                SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+            }
+            else if (j == 0 || i == 0) {
+                SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+                cout << " " << enemy[i][j];
                 SetConsoleTextAttribute(console, FOREGROUND_BLUE);
             }
             else {
@@ -1203,7 +1213,12 @@ void printMyBattleField(char** enemy, char** my, int size) {          //  Фун
     cout << " Ваше поле" << endl;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            cout << " " << my[i][j];
+            if (my[i][j] > 47 && my[i][j] < 58 && j != 0) {
+                cout << " " << '#';
+            }
+            else {
+                cout << " " << my[i][j];
+            }
         }
         cout << endl;
     }
