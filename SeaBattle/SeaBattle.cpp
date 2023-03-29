@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <stdio.h>
 using namespace std;
+//int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
 char** createField(int size);
 void printBattleField(char** enemy, char** my, int size, HANDLE console);
 void printMyBattleField(char** enemy, char** my, int size);
@@ -14,10 +15,11 @@ int checkShip(char* decks, int size);
 int checkField(char** field, char* decks);
 int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* enemyShipsFullPtr, HANDLE console, char** shipsEnemy, char** shipsMy);
 int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships);
-//int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
 int automaticFF(char** field, bool* shipsFullPtr, int size, char** ships);
 int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsComp, HANDLE console, char** ships, char** shipsEn);
 char* attack(char** field);
+int strValid(char* str);
+void win(const char* str);
 
 int main()
 {
@@ -25,6 +27,8 @@ int main()
     srand(time(NULL));
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     int size = 11;
+    const char* player = "PLAYER WIN";
+    const char* computer = "COMPUTER WIN";
     char** enemyField = createField(size);
     char** myField = createField(size);
     char** tempField = createField(size);
@@ -156,7 +160,7 @@ int main()
                 continue;
             }
             else if (checkBattle == 0) {
-                (playerWin)?cout << "PLAYER WIN!!!":cout << "COMPUTER WIN!!!";
+                (playerWin) ? win(player)/*cout << "PLAYER WIN!!!"*/ : win(computer)/*cout << "COMPUTER WIN!!!"*/;
                 system("pause");
                 battleField = false;
                 pauseFlag = false;
@@ -167,6 +171,178 @@ int main()
                 menu = true;
             }
         }
+    }
+}
+void win(const char* str) {
+    cout << str << endl;
+    Beep(1480, 200);
+    Beep(1568, 200);
+    Beep(1568, 200);
+    Beep(1568, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(369.99, 200);
+    Beep(392, 200);
+    Beep(369.99, 200);
+    Beep(392, 200);
+    Beep(392, 400);
+    Beep(196, 400);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(880, 200);
+    Beep(830.61, 200);
+    Beep(880, 200);
+    Beep(987.77, 400);
+    Beep(880, 200);
+    Beep(783.99, 200);
+    Beep(698.46, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(880, 200);
+    Beep(830.61, 200);
+    Beep(880, 200);
+    Beep(987.77, 400);
+    Sleep(200);
+    Beep(1108, 10);
+    Beep(1174.7, 200);
+    Beep(1480, 10);
+    Beep(1568, 200);
+    Sleep(200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(783.99, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(880, 200);
+    Beep(830.61, 200);
+    Beep(880, 200);
+    Beep(987.77, 400);
+    Beep(880, 200);
+    Beep(783.99, 200);
+    Beep(698.46, 200);
+    Beep(659.25, 200);
+    Beep(698.46, 200);
+    Beep(784, 200);
+    Beep(880, 400);
+    Beep(784, 200);
+    Beep(698.46, 200);
+    Beep(659.25, 200);
+    Beep(587.33, 200);
+    Beep(659.25, 200);
+    Beep(698.46, 200);
+    Beep(784, 400);
+    Beep(698.46, 200);
+    Beep(659.25, 200);
+    Beep(587.33, 200);
+    Beep(523.25, 200);
+    Beep(587.33, 200);
+    Beep(659.25, 200);
+    Beep(698.46, 400);
+    Beep(659.25, 200);
+    Beep(587.33, 200);
+    Beep(493.88, 200);
+    Beep(523.25, 200);
+    Sleep(400);
+    Beep(349.23, 400);
+    Beep(392, 200);
+    Beep(329.63, 200);
+    Beep(523.25, 200);
+    Beep(493.88, 200);
+    Beep(466.16, 200);
+    Beep(440, 200);
+    Beep(493.88, 200);
+    Beep(523.25, 200);
+    Beep(880, 200);
+    Beep(493.88, 200);
+    Beep(880, 200);
+    Beep(1760, 200);
+    Beep(440, 200);
+    Beep(392, 200);
+    Beep(440, 200);
+    Beep(493.88, 200);
+    Beep(783.99, 200);
+    Beep(440, 200);
+    Beep(783.99, 200);
+    Beep(1568, 200);
+    Beep(392, 200);
+    Beep(349.23, 200);
+    Beep(392, 200);
+    Beep(440, 200);
+    Beep(698.46, 200);
+    Beep(415.2, 200);
+    Beep(698.46, 200);
+    Beep(1396.92, 200);
+    Beep(349.23, 200);
+    Beep(329.63, 200);
+    Beep(311.13, 200);
+    Beep(329.63, 200);
+    Beep(659.25, 200);
+    Beep(698.46, 400);
+    Beep(783.99, 400);
+    Beep(440, 200);
+    Beep(493.88, 200);
+    Beep(523.25, 200);
+    Beep(880, 200);
+    Beep(493.88, 200);
+    Beep(880, 200);
+    Beep(1760, 200);
+    Beep(440, 200);
+    Beep(392, 200);
+    Beep(440, 200);
+    Beep(493.88, 200);
+    Beep(783.99, 200);
+    Beep(440, 200);
+    Beep(783.99, 200);
+    Beep(1568, 200);
+    Beep(392, 200);
+    Beep(349.23, 200);
+    Beep(392, 200);
+    Beep(440, 200);
+    Beep(698.46, 200);
+    Beep(659.25, 200);
+    Beep(698.46, 200);
+    Beep(739.99, 200);
+    Beep(783.99, 200);
+    Beep(392, 200);
+    Beep(392, 200);
+    Beep(392, 200);
+    Beep(392, 200);
+    Beep(196, 200);
+    Beep(196, 200);
+    Beep(196, 200);
+    Beep(185, 200);
+    Beep(196, 200);
+    Beep(185, 200);
+    Beep(196, 200);
+    Beep(207.65, 200);
+    Beep(220, 200);
+    Beep(233.08, 200);
+    Beep(246.94, 200);
+}
+
+int strValid(char* str) {
+    if (str[0] > 64 && str[0] < 74 && str[1] > 47 && str[1] < 58) {
+        return 0;
+    }
+    else {
+        return 1;
     }
 }
 
@@ -182,70 +358,6 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
         system("cls");
         SetConsoleTextAttribute(console, FOREGROUND_BLUE);
         printBattleField(tempField, myField, size, console);
-        
-        // Следующий код для отладки, при сборке убрать
-        // Следующий код для отладки, при сборке убрать
-        /*for (int i = 0; i < 10; i++) {
-            cout << myShipsArray[i] << " ";
-        }
-        cout << endl;
-        for (int i = 0; i < 10; i++) {
-            cout << EnemyShipsArray[i] <<  " ";
-        }
-        cout << endl;
-        for (int i = 0; i < 10; i++) {
-            cout << shipsEnemy[i] << endl;
-        }
-        cout << endl;
-        for (int i = 0; i < 10; i++) {
-            cout << shipsMy[i] << endl;
-        }
-        cout << endl;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (enemyField[i][j] == 'X') {
-                    SetConsoleTextAttribute(console, FOREGROUND_RED);
-                    cout << " " << enemyField[i][j];
-                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-                }
-                else if (enemyField[i][j] == '#') {
-                    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-                    cout << " " << enemyField[i][j];
-                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-                }
-                else if (enemyField[i][j] == '*') {
-                    SetConsoleTextAttribute(console, FOREGROUND_INTENSITY);
-                    cout << " " << enemyField[i][j];
-                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-                }
-                else {
-                    cout << " " << enemyField[i][j];
-                }
-            }
-            cout << "\t";
-            for (int j = 0; j < size; j++) {
-                if (myField[i][j] == 'X') {
-                    SetConsoleTextAttribute(console, FOREGROUND_RED);
-                    cout << " " << myField[i][j];
-                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-                }
-                else if (myField[i][j] == '#') {
-                    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-                    cout << " " << myField[i][j];
-                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-                }
-                else if (myField[i][j] == '*') {
-                    SetConsoleTextAttribute(console, FOREGROUND_INTENSITY);
-                    cout << " " << myField[i][j];
-                    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-                }
-                else {
-                    cout << " " << myField[i][j];
-                }
-            }
-            cout << endl;
-        }*/
-        // Конец отладки
 
         if (countPlayer == 20) {
             *playerWinPtr = true;
@@ -266,6 +378,9 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
             }
             else {
                 cin >> str;
+                if (strValid(str)) {
+                    continue;
+                }
             }
             if (!strcmp(str, "pause")) {
                 return 1;
@@ -274,18 +389,13 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
                 return 2;
             }
             if (enemyField[str[1] - 47][str[0] - 64] > 47 && enemyField[str[1] - 47][str[0] - 64] < 58) {
-                /*if (tempField[str[1] - 47][str[0] - 64] == 'X') {
-                    continue;
-                }
-                else {
-                    tempField[str[1] - 47][str[0] - 64] = 'X';
-                    countPlayer++;
-                }*/
+                Beep(100, 500);
                 tempField[str[1] - 47][str[0] - 64] = 'X';
                 EnemyShipsArray[enemyField[str[1] - 47][str[0] - 64] - 48]++;
                 countPlayer++;
             }
             else {
+                Beep(100, 500);
                 tempField[str[1] - 47][str[0] - 64] = '*';
                 player = false;
             }
@@ -329,7 +439,7 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
                 deathShip(tempField, shipsEnemy[9]);
                 EnemyShipsArray[9] = 9;
             }
-            Sleep(1000);
+            //Sleep(1000);
         }
         else {
             cout << "Выстрел компьютера: ";
@@ -338,9 +448,11 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
                 myShipsArray[myField[str[1] - 47][str[0] - 64] - 48]++;
                 myField[str[1] - 47][str[0] - 64] = 'X';
                 countComputer++;
+                Beep(100, 500);
             }
             else {
                 myField[str[1] - 47][str[0] - 64] = '*';
+                Beep(100, 500);
                 player = true;
             }
             if (myShipsArray[0] == 4) {
@@ -383,12 +495,10 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
                 deathShip(myField, shipsMy[9]);
                 myShipsArray[9] = 9;
             }
-            Sleep(1000);
+            //Sleep(1000);
         } 
     }
 }
-
-//void deathShip(char** )
 
 char* attack(char** field) {
     char* str = new char[3];
@@ -535,214 +645,6 @@ int automaticFF(char** field, bool* shipsFullPtr, int size, char** ships) {  // 
     *shipsFullPtr = true;
     return 0;
 }
-
-//int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {  //  Первый вариант автоматической расстановки кораблей, теперь не использую, использую automaticFF
-//    int i = 0; int timer = 25;
-//    char* decks = new char[6];
-//    bool fullShips = false;
-//    if (!*shipsFullPtr) {
-//        while (!fullShips) {
-//            system("cls");
-//            cout << " Морской бой!" << endl;
-//            cout << " -------------------------------------------" << endl;
-//            printBattleField(efield, mfield, size);
-//            cout << endl;
-//            /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
-//            cout << "Используй координатную сетку для указания места установки корабля." << endl;
-//            cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
-//            cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
-//            cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
-//            if (i == 0) {
-//                //cout << "Установи четырехпалубник: ";
-//                
-//                for (int j = 0; j < 6; j++) {
-//                    if (j == 0 || j == 3) {
-//                        decks[j] = rand() % 10 + 65;
-//                    }
-//                    else if (j == 2) {
-//                        decks[j] = '-';
-//                    }
-//                    else if (j == 1 || j == 4) {
-//                        decks[j] = rand() % 10 + 48;
-//                    }
-//                    else if (j == 5) {
-//                        decks[j] = '\0';
-//                    }
-//                }
-//                Sleep(timer);
-//                //cout << endl << decks << endl;
-//                //system("pause");
-//                // Здесь будем рандомить
-//
-//                /*if (!strcmp(decks, "reset")) {
-//                    return 2;
-//                }
-//                else if (!strcmp(decks, "exit")) {
-//                    return 3;
-//                }*/
-//                if (!checkShip(decks, 4) && !checkField(mfield, decks)) {
-//                    createShip(mfield, decks);
-//                    i++;
-//                    continue;
-//                }
-//                else {
-//                    continue;
-//                }
-//            }
-//            else if (i == 1 || i == 2) {
-//                //cout << "Установи трехпалубник: ";
-//                for (int j = 0; j < 6; j++) {
-//                    if (j == 0 || j == 3) {
-//                        decks[j] = rand() % 10 + 65;
-//                    }
-//                    else if (j == 2) {
-//                        decks[j] = '-';
-//                    }
-//                    else if (j == 1 || j == 4) {
-//                        decks[j] = rand() % 10 + 48;
-//                    }
-//                    else if (j == 5) {
-//                        decks[j] = '\0';
-//                    }
-//                }
-//                Sleep(timer);
-//                /*if (!strcmp(decks, "reset")) {
-//                    return 2;
-//                }
-//                else if (!strcmp(decks, "exit")) {
-//                    return 3;
-//                }*/
-//                if (!checkShip(decks, 3) && !checkField(mfield, decks)) {
-//                    createShip(mfield, decks);
-//                    i++;
-//                    continue;
-//                }
-//                else {
-//                    continue;
-//                }
-//            }
-//            else if (i > 2 && i < 6) {
-//                //cout << "Установи двупалубник: ";
-//                for (int j = 0; j < 6; j++) {
-//                    if (j == 0 || j == 3) {
-//                        decks[j] = rand() % 10 + 65;
-//                    }
-//                    else if (j == 2) {
-//                        decks[j] = '-';
-//                    }
-//                    else if (j == 1 || j == 4) {
-//                        decks[j] = rand() % 10 + 48;
-//                    }
-//                    else if (j == 5) {
-//                        decks[j] = '\0';
-//                    }
-//                }
-//                Sleep(timer);
-//                /*if (!strcmp(decks, "reset")) {
-//                    return 2;
-//                }
-//                else if (!strcmp(decks, "exit")) {
-//                    return 3;
-//                }*/
-//                if (!checkShip(decks, 2) && !checkField(mfield, decks)) {
-//                    createShip(mfield, decks);
-//                    i++;
-//                    continue;
-//                }
-//                else {
-//                    continue;
-//                }
-//            }
-//            else if (i > 5 && i < 10) {
-//                //cout << "Установи однопалубник: ";
-//
-//                for (int j = 0; j < 6; j++) {
-//                    if (j == 0) {
-//                        decks[j] = rand() % 10 + 65;
-//                        decks[3] = decks[j];
-//                    }
-//                    else if (j == 2) {
-//                        decks[j] = '-';
-//                    }
-//                    else if (j == 1) {
-//                        decks[j] = rand() % 10 + 48;
-//                        decks[4] = decks[j];
-//                    }
-//                    else if (j == 5) {
-//                        decks[j] = '\0';
-//                    }
-//                }
-//                Sleep(timer);
-//                /*if (!strcmp(decks, "reset")) {
-//                    return 2;
-//                }
-//                else if (!strcmp(decks, "exit")) {
-//                    return 3;
-//                }*/
-//                if (!checkShip(decks, 1) && !checkField(mfield, decks)) {
-//                    createShip(mfield, decks);
-//                    i++;
-//                    continue;
-//                }
-//                else {
-//                    continue;
-//                }
-//            }
-//            if (i == 10) {
-//                fullShips = true;
-//                *shipsFullPtr = true;
-//            }
-//        }
-//        int check = 0;
-//        cout << endl << "Корабли расставлены!" << endl;
-//        cout << "1 - Начать сражение" << endl;
-//        cout << "2 - Переставить корабли" << endl;
-//        cout << "3 - Выйти в меню" << endl;
-//        cin >> check;
-//        if (check == 1) {
-//            return 1;
-//        }
-//        else if (check == 2) {
-//            return 2;
-//        }
-//        else if (check == 3) {
-//            return 3;
-//        }
-//        else {
-//            return 0;
-//        }
-//    }
-//    else {
-//        system("cls");
-//        cout << " Морской бой!" << endl;
-//        cout << " -------------------------------------------" << endl;
-//        printBattleField(efield, mfield, size);
-//        cout << endl;
-//        /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
-//        cout << "Используй координатную сетку для указания места установки корабля." << endl;
-//        cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
-//        cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
-//        cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
-//        int check = 0;
-//        cout << endl << "Корабли расставлены!" << endl;
-//        cout << "1 - Начать сражение" << endl;
-//        cout << "2 - Переставить корабли" << endl;
-//        cout << "3 - Выйти в меню" << endl;
-//        cin >> check;
-//        if (check == 1) {
-//            return 1;
-//        }
-//        else if (check == 2) {
-//            return 2;
-//        }
-//        else if (check == 3) {
-//            return 3;
-//        }
-//        else {
-//            return 0;
-//        }
-//    }
-//}
 
 int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships) {
     system("cls");
@@ -1243,6 +1145,214 @@ char** createField(int size) {          // Функция создает одн�
     }
     return field;
 }
+
+//int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr) {  //  Первый вариант автоматической расстановки кораблей, теперь не использую, использую automaticFF
+//    int i = 0; int timer = 25;
+//    char* decks = new char[6];
+//    bool fullShips = false;
+//    if (!*shipsFullPtr) {
+//        while (!fullShips) {
+//            system("cls");
+//            cout << " Морской бой!" << endl;
+//            cout << " -------------------------------------------" << endl;
+//            printBattleField(efield, mfield, size);
+//            cout << endl;
+//            /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
+//            cout << "Используй координатную сетку для указания места установки корабля." << endl;
+//            cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
+//            cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
+//            cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
+//            if (i == 0) {
+//                //cout << "Установи четырехпалубник: ";
+//                
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0 || j == 3) {
+//                        decks[j] = rand() % 10 + 65;
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1 || j == 4) {
+//                        decks[j] = rand() % 10 + 48;
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                //cout << endl << decks << endl;
+//                //system("pause");
+//                // Здесь будем рандомить
+//
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 4) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            else if (i == 1 || i == 2) {
+//                //cout << "Установи трехпалубник: ";
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0 || j == 3) {
+//                        decks[j] = rand() % 10 + 65;
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1 || j == 4) {
+//                        decks[j] = rand() % 10 + 48;
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 3) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            else if (i > 2 && i < 6) {
+//                //cout << "Установи двупалубник: ";
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0 || j == 3) {
+//                        decks[j] = rand() % 10 + 65;
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1 || j == 4) {
+//                        decks[j] = rand() % 10 + 48;
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 2) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            else if (i > 5 && i < 10) {
+//                //cout << "Установи однопалубник: ";
+//
+//                for (int j = 0; j < 6; j++) {
+//                    if (j == 0) {
+//                        decks[j] = rand() % 10 + 65;
+//                        decks[3] = decks[j];
+//                    }
+//                    else if (j == 2) {
+//                        decks[j] = '-';
+//                    }
+//                    else if (j == 1) {
+//                        decks[j] = rand() % 10 + 48;
+//                        decks[4] = decks[j];
+//                    }
+//                    else if (j == 5) {
+//                        decks[j] = '\0';
+//                    }
+//                }
+//                Sleep(timer);
+//                /*if (!strcmp(decks, "reset")) {
+//                    return 2;
+//                }
+//                else if (!strcmp(decks, "exit")) {
+//                    return 3;
+//                }*/
+//                if (!checkShip(decks, 1) && !checkField(mfield, decks)) {
+//                    createShip(mfield, decks);
+//                    i++;
+//                    continue;
+//                }
+//                else {
+//                    continue;
+//                }
+//            }
+//            if (i == 10) {
+//                fullShips = true;
+//                *shipsFullPtr = true;
+//            }
+//        }
+//        int check = 0;
+//        cout << endl << "Корабли расставлены!" << endl;
+//        cout << "1 - Начать сражение" << endl;
+//        cout << "2 - Переставить корабли" << endl;
+//        cout << "3 - Выйти в меню" << endl;
+//        cin >> check;
+//        if (check == 1) {
+//            return 1;
+//        }
+//        else if (check == 2) {
+//            return 2;
+//        }
+//        else if (check == 3) {
+//            return 3;
+//        }
+//        else {
+//            return 0;
+//        }
+//    }
+//    else {
+//        system("cls");
+//        cout << " Морской бой!" << endl;
+//        cout << " -------------------------------------------" << endl;
+//        printBattleField(efield, mfield, size);
+//        cout << endl;
+//        /*cout << "Противник уже расставил корабли, дело за тобой!" << endl;
+//        cout << "Используй координатную сетку для указания места установки корабля." << endl;
+//        cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
+//        cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
+//        cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
+//        int check = 0;
+//        cout << endl << "Корабли расставлены!" << endl;
+//        cout << "1 - Начать сражение" << endl;
+//        cout << "2 - Переставить корабли" << endl;
+//        cout << "3 - Выйти в меню" << endl;
+//        cin >> check;
+//        if (check == 1) {
+//            return 1;
+//        }
+//        else if (check == 2) {
+//            return 2;
+//        }
+//        else if (check == 3) {
+//            return 3;
+//        }
+//        else {
+//            return 0;
+//        }
+//    }
+//}
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
 // Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
