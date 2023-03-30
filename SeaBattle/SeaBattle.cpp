@@ -4,6 +4,8 @@
 #include <iostream>
 #include <windows.h>
 #include <stdio.h>
+#include <conio.h>
+#include <ctype.h>
 using namespace std;
 //int automaticFillField(char** efield, char** mfield, int size, bool* shipsFullPtr);
 char** createField(int size);
@@ -14,12 +16,12 @@ void deathShip(char** field, char* decks);
 int checkShip(char* decks, int size);
 int checkField(char** field, char* decks);
 int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* enemyShipsFullPtr, HANDLE console, char** shipsEnemy, char** shipsMy);
-int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships);
+int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships, bool* firstStartPtr);
 int automaticFF(char** field, bool* shipsFullPtr, int size, char** ships);
 int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsComp, HANDLE console, char** ships, char** shipsEn);
 char* attack(char** field);
 int strValid(char* str);
-void win(const char* str);
+void win(const char* str, HANDLE console, bool *firstStart);
 
 int main()
 {
@@ -27,8 +29,8 @@ int main()
     srand(time(NULL));
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     int size = 11;
-    const char* player = "PLAYER WIN";
-    const char* computer = "COMPUTER WIN";
+    const char* player = "Игрок победил!!! :)";
+    const char* computer = "Компьютер победил!!! :(";
     char** enemyField = createField(size);
     char** myField = createField(size);
     char** tempField = createField(size);
@@ -49,9 +51,10 @@ int main()
     bool enemyShipsFull = false; bool* enemyShipsFullPtr = &enemyShipsFull;
     bool playerWin = false; bool* playerWinPtr = &playerWin;
     bool compVsComp = false; bool* compVsCompPtr = &compVsComp;
+    bool firstStart = true; bool* firstStartPtr = &firstStart;
     while (true) {
         if (menu) { //  Окно меню
-            int checkMenu = mainMenu(shipsFullFlagPtr, pauseFlagPtr, compVsCompPtr, console, shipsEnemy);
+            int checkMenu = mainMenu(shipsFullFlagPtr, pauseFlagPtr, compVsCompPtr, console, shipsEnemy, firstStartPtr);
             if (checkMenu == 1) {
                 if (shipsFullFlag) {
                     if (pauseFlag) {
@@ -160,7 +163,7 @@ int main()
                 continue;
             }
             else if (checkBattle == 0) {
-                (playerWin) ? win(player)/*cout << "PLAYER WIN!!!"*/ : win(computer)/*cout << "COMPUTER WIN!!!"*/;
+                (playerWin) ? win(player, console, &firstStart)/*cout << "PLAYER WIN!!!"*/ : win(computer, console, &firstStart)/*cout << "COMPUTER WIN!!!"*/;
                 system("pause");
                 battleField = false;
                 pauseFlag = false;
@@ -173,172 +176,268 @@ int main()
         }
     }
 }
-void win(const char* str) {
+void win(const char* str, HANDLE console, bool* firstStart) {
+    int x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << endl << str << endl;
+    Beep(659, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
     cout << str << endl;
-    Beep(1480, 200);
-    Beep(1568, 200);
-    Beep(1568, 200);
-    Beep(1568, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(369.99, 200);
-    Beep(392, 200);
-    Beep(369.99, 200);
-    Beep(392, 200);
-    Beep(392, 400);
-    Beep(196, 400);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(880, 200);
-    Beep(830.61, 200);
-    Beep(880, 200);
-    Beep(987.77, 400);
-    Beep(880, 200);
-    Beep(783.99, 200);
-    Beep(698.46, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(880, 200);
-    Beep(830.61, 200);
-    Beep(880, 200);
-    Beep(987.77, 400);
-    Sleep(200);
-    Beep(1108, 10);
-    Beep(1174.7, 200);
-    Beep(1480, 10);
-    Beep(1568, 200);
-    Sleep(200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(783.99, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(880, 200);
-    Beep(830.61, 200);
-    Beep(880, 200);
-    Beep(987.77, 400);
-    Beep(880, 200);
-    Beep(783.99, 200);
-    Beep(698.46, 200);
-    Beep(659.25, 200);
-    Beep(698.46, 200);
-    Beep(784, 200);
-    Beep(880, 400);
-    Beep(784, 200);
-    Beep(698.46, 200);
-    Beep(659.25, 200);
-    Beep(587.33, 200);
-    Beep(659.25, 200);
-    Beep(698.46, 200);
-    Beep(784, 400);
-    Beep(698.46, 200);
-    Beep(659.25, 200);
-    Beep(587.33, 200);
-    Beep(523.25, 200);
-    Beep(587.33, 200);
-    Beep(659.25, 200);
-    Beep(698.46, 400);
-    Beep(659.25, 200);
-    Beep(587.33, 200);
-    Beep(493.88, 200);
-    Beep(523.25, 200);
-    Sleep(400);
-    Beep(349.23, 400);
-    Beep(392, 200);
-    Beep(329.63, 200);
-    Beep(523.25, 200);
-    Beep(493.88, 200);
-    Beep(466.16, 200);
-    Beep(440, 200);
-    Beep(493.88, 200);
-    Beep(523.25, 200);
-    Beep(880, 200);
-    Beep(493.88, 200);
-    Beep(880, 200);
-    Beep(1760, 200);
-    Beep(440, 200);
-    Beep(392, 200);
-    Beep(440, 200);
-    Beep(493.88, 200);
-    Beep(783.99, 200);
-    Beep(440, 200);
-    Beep(783.99, 200);
-    Beep(1568, 200);
-    Beep(392, 200);
-    Beep(349.23, 200);
-    Beep(392, 200);
-    Beep(440, 200);
-    Beep(698.46, 200);
-    Beep(415.2, 200);
-    Beep(698.46, 200);
-    Beep(1396.92, 200);
-    Beep(349.23, 200);
-    Beep(329.63, 200);
-    Beep(311.13, 200);
-    Beep(329.63, 200);
-    Beep(659.25, 200);
-    Beep(698.46, 400);
-    Beep(783.99, 400);
-    Beep(440, 200);
-    Beep(493.88, 200);
-    Beep(523.25, 200);
-    Beep(880, 200);
-    Beep(493.88, 200);
-    Beep(880, 200);
-    Beep(1760, 200);
-    Beep(440, 200);
-    Beep(392, 200);
-    Beep(440, 200);
-    Beep(493.88, 200);
-    Beep(783.99, 200);
-    Beep(440, 200);
-    Beep(783.99, 200);
-    Beep(1568, 200);
-    Beep(392, 200);
-    Beep(349.23, 200);
-    Beep(392, 200);
-    Beep(440, 200);
-    Beep(698.46, 200);
-    Beep(659.25, 200);
-    Beep(698.46, 200);
-    Beep(739.99, 200);
-    Beep(783.99, 200);
-    Beep(392, 200);
-    Beep(392, 200);
-    Beep(392, 200);
-    Beep(392, 200);
-    Beep(196, 200);
-    Beep(196, 200);
-    Beep(196, 200);
-    Beep(185, 200);
-    Beep(196, 200);
-    Beep(185, 200);
-    Beep(196, 200);
-    Beep(207.65, 200);
-    Beep(220, 200);
-    Beep(233.08, 200);
-    Beep(246.94, 200);
+    Beep(622, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(659, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(622, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(659, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(494, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(587, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(523, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(440, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(262, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(330, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(440, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(494, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(330, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(415, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(494, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(523, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(330, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(659, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(622, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(659, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(622, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(659, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(494, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(587, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(523, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(440, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(262, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(330, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(440, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(494, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(330, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(523, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(494, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    Beep(440, 170);
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    x = rand() % 10;
+    for (int i = 0; i < x; i++) {
+        cout << "\t";
+    }
+    cout << str << endl;
+    *firstStart = true;
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 }
 
 int strValid(char* str) {
-    if (str[0] > 64 && str[0] < 74 && str[1] > 47 && str[1] < 58) {
+    if (str[0] > 64 && str[0] < 75 && str[1] > 47 && str[1] < 58) {
         return 0;
     }
     else {
@@ -347,6 +446,7 @@ int strValid(char* str) {
 }
 
 int battle(char** enemyField, char** myField, char** tempField, int size, bool* playerWinPtr, bool* compVsCompPtr, HANDLE console, char** shipsEnemy, char** shipsMy) {
+    int speed = 100;
     char* str = new char[5];
     bool player = true;
     bool computer = false;
@@ -368,7 +468,15 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
             *playerWinPtr = false;
         }
         cout << endl;
-        cout << "Попадания:" << endl << "Первый игрок: " << countPlayer << endl << "Второй игрок: " << countComputer << endl;
+        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        cout << "Попадания:" << endl;
+        cout << "Игрок: ";
+        SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+        cout << countPlayer << endl;
+        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        cout << "Компьютер: ";
+        SetConsoleTextAttribute(console, FOREGROUND_RED);
+        cout << countComputer << endl;
         SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         cout << endl;
         if (player) {
@@ -379,23 +487,29 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
             else {
                 cin >> str;
                 if (strValid(str)) {
+                    if (!strcmp(str, "pause")) {
+                        return 1;
+                    }
+                    if (!strcmp(str, "exit")) {
+                        return 2;
+                    }
                     continue;
                 }
             }
-            if (!strcmp(str, "pause")) {
+            /*if (!strcmp(str, "pause")) {
                 return 1;
             }
             else if (!strcmp(str, "exit")) {
                 return 2;
-            }
+            }*/
             if (enemyField[str[1] - 47][str[0] - 64] > 47 && enemyField[str[1] - 47][str[0] - 64] < 58) {
-                Beep(100, 500);
+                Beep(100, speed);
                 tempField[str[1] - 47][str[0] - 64] = 'X';
                 EnemyShipsArray[enemyField[str[1] - 47][str[0] - 64] - 48]++;
                 countPlayer++;
             }
             else {
-                Beep(100, 500);
+                Beep(500, speed);
                 tempField[str[1] - 47][str[0] - 64] = '*';
                 player = false;
             }
@@ -448,11 +562,11 @@ int battle(char** enemyField, char** myField, char** tempField, int size, bool* 
                 myShipsArray[myField[str[1] - 47][str[0] - 64] - 48]++;
                 myField[str[1] - 47][str[0] - 64] = 'X';
                 countComputer++;
-                Beep(100, 500);
+                Beep(100, speed);
             }
             else {
                 myField[str[1] - 47][str[0] - 64] = '*';
-                Beep(100, 500);
+                Beep(500, speed);
                 player = true;
             }
             if (myShipsArray[0] == 4) {
@@ -646,23 +760,48 @@ int automaticFF(char** field, bool* shipsFullPtr, int size, char** ships) {  // 
     return 0;
 }
 
-int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships) {
+int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE console, char** ships, bool* firstStartPtr) {
     system("cls");
-    int start = 0;
+    char start = ' ';
     cout << endl;
-    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-    cout << "===============================================================================" << endl;
+    SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    cout << "*******************************************************************************" << endl;
+    cout << "..............................................................................." << endl;
     cout << " ####   #####   ####      #####    ####   ######  ######  ##      #####     ###" << endl;
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
     cout << "##      ##     ##  ##     ##  ##  ##  ##    ##      ##    ##      ##        ###" << endl;
     cout << " ####   ####   ######     #####   ######    ##      ##    ##      ####      ###" << endl;
     cout << "    ##  ##     ##  ##     ##  ##  ##  ##    ##      ##    ##      ##           " << endl;
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
     cout << " ####   #####  ##  ##     #####   ##  ##    ##      ##    ######  #####     ###" << endl;
-    cout << "===============================================================================" << endl;
-    
+    cout << "..............................................................................." << endl;
+    cout << "*******************************************************************************" << endl;
+    if (*firstStartPtr) {
+        Beep(300, 250);
+        Beep(300, 250);
+        Beep(300, 250);
+        Beep(250, 175);
+        Beep(350, 100);
+        Beep(300, 250);
+        Beep(250, 175);
+        Beep(350, 100);
+        Beep(300, 250);
+        Sleep(225);
+        Beep(450, 250);
+        Beep(450, 250);
+        Beep(450, 250);
+        Beep(300, 175);
+        Beep(350, 100);
+        Beep(300, 250);
+        Beep(250, 175);
+        Beep(350, 100);
+        Beep(300, 250);
+        *firstStartPtr = false;
+    }
     cout << endl;
     cout << endl;
     if (*shipsFullPtr) {
-        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        SetConsoleTextAttribute(console, FOREGROUND_GREEN);
         cout << "1 - Начать сражение";
         (*shipsFullPtr) ? cout << " (Корабли расставлены!)" << endl : cout << " (Необходимо расставить корабли!)" << endl;
     }
@@ -677,12 +816,12 @@ int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE con
         cout << "3 - Расставить корабли в ручную" << endl;
     }
     else {
-        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        SetConsoleTextAttribute(console, FOREGROUND_GREEN);
         cout << "2 - Автоматическая расстановка кораблей" << endl;
         cout << "3 - Расставить корабли в ручную" << endl;
     }
     if (*pausePtr) {
-        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        SetConsoleTextAttribute(console, FOREGROUND_GREEN);
         cout << "4 - Продолжить сражение";
         (*pausePtr) ? cout << " (Игра начата)" << endl : cout << " (Игра еще не начата!)" << endl;
     }
@@ -692,28 +831,29 @@ int mainMenu(bool* shipsFullPtr, bool* pausePtr, bool* compVsCompPtr, HANDLE con
         (*pausePtr) ? cout << " (Игра начата)" << endl : cout << " (Игра еще не начата!)" << endl;
     }
     if (*compVsCompPtr) {
-        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        SetConsoleTextAttribute(console, FOREGROUND_GREEN);
         cout << "5 - Режим игры (Компьютер против компьютера)" << endl;
     }
     else {
-        SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        SetConsoleTextAttribute(console, FOREGROUND_GREEN);
         cout << "5 - Режим игры (Игрок против компьютера)" << endl;
     }
     cout << endl;
-    cin >> start;
-    if (start == 1) {
+    //cin >> start;
+    start = _getch();
+    if (start == '1') {
         return 1;
     }
-    else if (start == 2) {
+    else if (start == '2') {
         return 2;
     }
-    else if (start == 3) {
+    else if (start == '3') {
         return 3;
     }
-    else if (start == 4) {
+    else if (start == '4') {
         return 4;
     }
-    else if (start == 5) {
+    else if (start == '5') {
         return 5;
     }
     else {
@@ -866,24 +1006,24 @@ int fillField(char** efield, char** mfield, int size, bool* shipsFullPtr, bool* 
         cout << "Чтобы поставить четырех палубный корабль укажи первую и последнюю клетку через знак '-'." << endl;
         cout << "Например A1-A4, корабли можно ставить только горизонтально или вертикально!" << endl;
         cout << "Для сброса введи: reset. Для выхода в меню: exit." << endl;*/
-        int check = 0;
+        char check = ' ';
         SetConsoleTextAttribute(console, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         cout << endl << "Корабли расставлены!" << endl;
         cout << "1 - Начать сражение" << endl;
         cout << "2 - Переставить корабли" << endl;
         cout << "3 - Выйти в меню" << endl;
         cout << "4 - Автоматическая расстановка" << endl;
-        cin >> check;
-        if (check == 1) {
+        check = _getch();
+        if (check == '1') {
             return 1;
         }
-        else if (check == 2) {
+        else if (check == '2') {
             return 2;
         }
-        else if (check == 3) {
+        else if (check == '3') {
             return 3;
         }
-        else if (check == 4) {
+        else if (check == '4') {
             return 4;
         }
         else {
@@ -1054,7 +1194,12 @@ void deathShip(char** field, char* decks) {
 }
 
 void printBattleField(char** enemy, char** my, int size, HANDLE console) {          //  Функиця выводит на экран два игровых поля в горизонтальной виде
-    cout << " Поле противника" << "\t" << " Ваше поле" << endl;
+    SetConsoleTextAttribute(console, FOREGROUND_RED);
+    cout << " Поле компьютера";
+    cout << "\t";
+    SetConsoleTextAttribute(console, FOREGROUND_GREEN);
+    cout << " Поле игрока" << endl;
+    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             if (enemy[i][j] == 'X') {
